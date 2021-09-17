@@ -2,9 +2,11 @@ import torch
 import math
 import numpy as np
 
+
 def log10(x):
-      """Convert a new tensor with the base-10 logarithm of the elements of x. """
-      return torch.log(x) / math.log(10)
+    """Convert a new tensor with the base-10 logarithm of the elements of x. """
+    return torch.log(x) / math.log(10)
+
 
 class Result(object):
     def __init__(self):

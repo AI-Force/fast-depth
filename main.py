@@ -1,17 +1,14 @@
 import os
 import time
 import csv
-import numpy as np
-
 import torch
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.optim
 cudnn.benchmark = True
 
-import models
-from metrics import AverageMeter, Result
-import utils
+from .metrics import AverageMeter, Result
+from . import utils
 
 args = utils.parse_command()
 print(args)
@@ -22,6 +19,7 @@ fieldnames = ['rmse', 'mae', 'delta1', 'absrel',
 best_fieldnames = ['best_epoch'] + fieldnames
 best_result = Result()
 best_result.set_to_worst()
+
 
 def main():
     global args, best_result, output_directory, train_csv, test_csv
@@ -43,8 +41,7 @@ def main():
 
     # evaluation mode
     if args.evaluate:
-        assert os.path.isfile(args.evaluate), \
-        "=> no model found at '{}'".format(args.evaluate)
+        assert os.path.isfile(args.evaluate), "=> no model found at '{}'".format(args.evaluate)
         print("=> loading model '{}'".format(args.evaluate))
         checkpoint = torch.load(args.evaluate)
         if type(checkpoint) is dict:
@@ -125,6 +122,7 @@ def validate(val_loader, model, epoch, write_to_file=True):
                 'mae': avg.mae, 'delta1': avg.delta1, 'delta2': avg.delta2, 'delta3': avg.delta3,
                 'data_time': avg.data_time, 'gpu_time': avg.gpu_time})
     return avg, img_merge
+
 
 if __name__ == '__main__':
     main()

@@ -1,13 +1,11 @@
 import os
-import shutil
-import time
 
 import torch
 import torch.nn as nn
 import torch.nn.parallel
-import torch.backends.cudnn as cudnn
 import torch.optim
 import torch.utils.data
+
 
 class MobileNet(nn.Module):
     def __init__(self, relu6=True):

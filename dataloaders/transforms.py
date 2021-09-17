@@ -1,9 +1,7 @@
 from __future__ import division
 import torch
-import math
-import random
 
-from PIL import Image, ImageOps, ImageEnhance
+from PIL import Image, ImageEnhance
 try:
     import accimage
 except ImportError:
@@ -13,10 +11,8 @@ import numpy as np
 import numbers
 import types
 import collections
-import warnings
 
 import scipy.ndimage.interpolation as itpl
-import scipy.misc as misc
 
 
 def _is_numpy_image(img):
@@ -134,6 +130,23 @@ def adjust_hue(img, hue_factor):
 
     img = Image.merge('HSV', (h, s, v)).convert(input_mode)
     return img
+
+def resize_img(img, size, interpolation, mode=None):
+    assert isinstance(size, int) or isinstance(size, float) or \
+           (isinstance(size, collections.Iterable) and len(size) == 2)
+
+    h, w = img.shape[:2]
+
+    # Fraction as float
+    if isinstance(size, float):
+        img_size = (int(size * w), int(size * h))
+    # Percentage as integer
+    elif isinstance(size, int):
+        img_size = (int(size / 100 * w), int(size / 100 * h))
+    # Size as tuple
+    else:
+        img_size = (size[1], size[0])
+    return np.array(Image.fromarray(img).resize(img_size, interpolation, mode=mode))
 
 
 def adjust_gamma(img, gamma, gain=1):
@@ -320,7 +333,7 @@ class Resize(object):
             ``PIL.Image.BILINEAR``
     """
 
-    def __init__(self, size, interpolation='nearest'):
+    def __init__(self, size, interpolation=Image.NEAREST):
         assert isinstance(size, int) or isinstance(size, float) or \
                (isinstance(size, collections.Iterable) and len(size) == 2)
         self.size = size
@@ -334,9 +347,9 @@ class Resize(object):
             PIL Image: Rescaled image.
         """
         if img.ndim == 3:
-            return misc.imresize(img, self.size, self.interpolation)
+            return resize_img(img, self.size, self.interpolation)
         elif img.ndim == 2:
-            return misc.imresize(img, self.size, self.interpolation, 'F')
+            return resize_img(img, self.size, self.interpolation, 'F')
         else:
             RuntimeError('img should be ndarray with 2 or 3 dimensions. Got {}'.format(img.ndim))
 
