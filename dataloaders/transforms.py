@@ -131,6 +131,7 @@ def adjust_hue(img, hue_factor):
     img = Image.merge('HSV', (h, s, v)).convert(input_mode)
     return img
 
+
 def resize_img(img, size, interpolation, mode=None):
     assert isinstance(size, int) or isinstance(size, float) or \
            (isinstance(size, collections.Iterable) and len(size) == 2)
@@ -146,7 +147,7 @@ def resize_img(img, size, interpolation, mode=None):
     # Size as tuple
     else:
         img_size = (size[1], size[0])
-    return np.array(Image.fromarray(img).resize(img_size, interpolation, mode=mode))
+    return np.array(Image.fromarray(img, mode=mode).resize(img_size, interpolation))
 
 
 def adjust_gamma(img, gamma, gain=1):
